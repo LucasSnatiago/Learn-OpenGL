@@ -1,14 +1,17 @@
-BIN=window.out
-CFLAGS=-lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+BIN=LearnOpenGL.out
+SRC=src/*.c src/*.cpp src/window/*.c src/input/*.c
+CFLAGS=-lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -O2
 INCLUDE=./include
-SRC=src/*.c src/*.cpp
 
 all:
-	$(CC) $(CFLAGS) -I $(INCLUDE) $(SRC) -o $(BIN)
+	$(CXX) $(CFLAGS) -I $(INCLUDE) $(SRC) -o $(BIN)
+
+release: all
+	strip $(BIN)
 
 clean:
-	$(RM) *.o
 	$(RM) *.out
+	$(RM) *.o
 
 run: all
 	./$(BIN)
