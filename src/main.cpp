@@ -5,9 +5,11 @@
 // Standard Libraries Imports
 #include <iostream>
 
-// Local Libaries import
-#include <window/resize.h>
-#include <input/input.h>
+// Local C Libraries import
+extern "C" {
+    #include <window/resize.h>
+    #include <input/input.h>
+}
 
 // Vertex shader for the triangle
 const char *vertexShaderSource = "#version 330 core\n"
