@@ -1,6 +1,6 @@
 BIN=LearnOpenGL.out
 SRC=src/*.c src/*.cpp src/window/*.c src/input/*.c
-CFLAGS=-lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -O2
+CFLAGS=-lglfw -lGL -lX11 -lwayland-client -lpthread -lXrandr -lXi -ldl -O2
 INCLUDE=./include
 
 all:
