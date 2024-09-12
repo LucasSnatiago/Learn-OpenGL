@@ -5,7 +5,7 @@
 // Standard Libraries Imports
 #include <iostream>
 
-// Local C Libraries import
+// Local C Libraries imports
 extern "C" {
     #include <window/resize.h>
     #include <input/input.h>
