@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Install dependencies
-      run: sudo apt update && sudo apt install -y libglfw3-dev g++-12 build-essential libwayland-dev
+      run: sudo apt update && sudo apt install -y libglfw3-dev g++-12 build-essential libwayland-dev xorg-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
