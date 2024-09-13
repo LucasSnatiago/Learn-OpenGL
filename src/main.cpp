@@ -121,8 +121,6 @@ int main(int argc, char **argv) {
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
 
-    std::cout << "VBO: " << VBO << ", VAO: " << VAO << ", EBO: " << EBO << "\n";
-
     // Bind Vertex Array Object
     glBindVertexArray(VAO);
 
@@ -140,10 +138,12 @@ int main(int argc, char **argv) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    enum RENDER_MODE render = FILL;
+    char isKeyPressed = 0;
     // Program main loop
     while (!glfwWindowShouldClose(window)) {
         // Process input events
-        processInput(window);
+        processInput(window, &render, &isKeyPressed);
 
         // Clear Background
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
