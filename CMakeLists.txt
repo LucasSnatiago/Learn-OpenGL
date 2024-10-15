@@ -4,6 +4,8 @@ cmake_policy(SET CMP0072 NEW)
 # Nome do projeto e definição dos padrões de linguagem
 project(LearnOpenGL LANGUAGES C CXX VERSION 0.1.0)
 
+include(FetchContent)
+
 # Adicionar o diretório ./include ao caminho de inclusão
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
@@ -15,6 +17,16 @@ file(GLOB SOURCES
 )
 
 find_package(OpenGL REQUIRED)
+
+# Faz o download e inclui o GLFW
+FetchContent_Declare(
+  glfw
+  GIT_REPOSITORY https://github.com/glfw/glfw.git
+  GIT_TAG latest
+)
+
+FetchContent_MakeAvailable(glfw)
+
 
 # Cria o executável e inclui as bibliotecas necessárias
 add_executable(${PROJECT_NAME} ${SOURCES})
