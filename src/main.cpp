@@ -19,11 +19,18 @@ const char *vertexShaderSource = "#version 460 core\n"
     " gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
 
-const char *fragmentShaderSource = "#version 460 core\n"
+const char *fragmentShaderSourceOrange = "#version 460 core\n"
     "out vec4 FragColor;\n"
     "void main() {\n"
     "FragColor = vec4(1.0f, 0.5f, 0.4f, 1.0f);\n"
     "}\0";
+
+const char *fragmentShaderSourceYellow = "#version 460 core\n"
+    "out vec4 FragColor;\n"
+    "void main() {\n"
+    "FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
+    "}\0";
+
 
 void checkShaderCompilationStatus(unsigned int shader) {
     // Checking for compilation status
@@ -72,34 +79,54 @@ int main(int argc, char **argv) {
     checkShaderCompilationStatus(vertexShader);
 
     // Creating the fragment shader pipeline
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
+    unsigned int fragmentShaderOrange;
+    fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSourceOrange, NULL);
+    glCompileShader(fragmentShaderOrange);
 
     // Checking for compilation error
-    checkShaderCompilationStatus(fragmentShader);
+    checkShaderCompilationStatus(fragmentShaderOrange);
+
+    // Creating the yellow color
+    unsigned int fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShaderYellow, 1, &fragmentShaderSourceYellow, NULL);
+    glCompileShader(fragmentShaderYellow);
+
+    // Checking for compilation error
+    checkShaderCompilationStatus(fragmentShaderYellow);
 
     // Shader program
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
+    unsigned int shaderProgram[2];
+    shaderProgram[0] = glCreateProgram();
+    shaderProgram[1] = glCreateProgram();
 
     // Attaching shaders to the program
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    glAttachShader(shaderProgram[0], vertexShader);
+    glAttachShader(shaderProgram[1], vertexShader);
+    glAttachShader(shaderProgram[0], fragmentShaderOrange);
+    glAttachShader(shaderProgram[1], fragmentShaderYellow);
+    glLinkProgram(shaderProgram[0]);
+    glLinkProgram(shaderProgram[1]);
     // Check for linking errors
     int success;
     char infoLog[512];
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetProgramiv(shaderProgram[0], GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        glGetProgramInfoLog(shaderProgram[0], 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
+    glGetProgramiv(shaderProgram[1], GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(shaderProgram[1], 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    }
+
+
     // Freeing shader from memory
     glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    glDeleteShader(fragmentShaderYellow);
+    glDeleteShader(fragmentShaderOrange);
 
     // Building the triangles
     float vertices1[] = {
@@ -154,12 +181,15 @@ int main(int argc, char **argv) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Draw triangle
-        glUseProgram(shaderProgram);
+        // Draw orange triangle
+        glUseProgram(shaderProgram[0]);
 
         // First triangle
         glBindVertexArray(VAOs[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        // Draw yellow triangle
+        glUseProgram(shaderProgram[1]);
 
         // Draw second triangle
         glBindVertexArray(VAOs[1]);
@@ -173,7 +203,8 @@ int main(int argc, char **argv) {
     // Freeing all resources
     glDeleteVertexArrays(2, VAOs);
     glDeleteBuffers(2, VBOs);
-    glDeleteProgram(shaderProgram);
+    glDeleteProgram(shaderProgram[0]);
+    glDeleteProgram(shaderProgram[1]);
 
     glfwTerminate();
     return 0;
