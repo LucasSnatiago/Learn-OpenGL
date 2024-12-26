@@ -4,6 +4,7 @@
 
 // Standard Libraries Imports
 #include <iostream>
+#include <cmath>
 
 // Local C Libraries imports
 extern "C" {
@@ -14,23 +15,19 @@ extern "C" {
 // Vertex shader for the triangle
 const char *vertexShaderSource = "#version 460 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    // "out vec4 vertexColor;\n"
     "void main()\n"
     "{\n"
-    " gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "    gl_Position = vec4(aPos, 1.0);\n"
+    // "    vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
     "}\0";
 
-const char *fragmentShaderSourceOrange = "#version 460 core\n"
+const char *fragmentShaderSource = "#version 460 core\n"
     "out vec4 FragColor;\n"
+    "uniform vec4 ourColor;\n"
     "void main() {\n"
-    "FragColor = vec4(1.0f, 0.5f, 0.4f, 1.0f);\n"
+    "    FragColor = ourColor;\n"
     "}\0";
-
-const char *fragmentShaderSourceYellow = "#version 460 core\n"
-    "out vec4 FragColor;\n"
-    "void main() {\n"
-    "FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
-    "}\0";
-
 
 void checkShaderCompilationStatus(unsigned int shader) {
     // Checking for compilation status
@@ -79,91 +76,56 @@ int main(int argc, char **argv) {
     checkShaderCompilationStatus(vertexShader);
 
     // Creating the fragment shader pipeline
-    unsigned int fragmentShaderOrange;
-    fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSourceOrange, NULL);
-    glCompileShader(fragmentShaderOrange);
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
 
     // Checking for compilation error
-    checkShaderCompilationStatus(fragmentShaderOrange);
-
-    // Creating the yellow color
-    unsigned int fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShaderYellow, 1, &fragmentShaderSourceYellow, NULL);
-    glCompileShader(fragmentShaderYellow);
-
-    // Checking for compilation error
-    checkShaderCompilationStatus(fragmentShaderYellow);
+    checkShaderCompilationStatus(fragmentShader);
 
     // Shader program
-    unsigned int shaderProgram[2];
-    shaderProgram[0] = glCreateProgram();
-    shaderProgram[1] = glCreateProgram();
+    unsigned int shaderProgram;
+    shaderProgram = glCreateProgram();
 
     // Attaching shaders to the program
-    glAttachShader(shaderProgram[0], vertexShader);
-    glAttachShader(shaderProgram[1], vertexShader);
-    glAttachShader(shaderProgram[0], fragmentShaderOrange);
-    glAttachShader(shaderProgram[1], fragmentShaderYellow);
-    glLinkProgram(shaderProgram[0]);
-    glLinkProgram(shaderProgram[1]);
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
     // Check for linking errors
     int success;
     char infoLog[512];
-    glGetProgramiv(shaderProgram[0], GL_LINK_STATUS, &success);
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(shaderProgram[0], 512, NULL, infoLog);
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
-
-    glGetProgramiv(shaderProgram[1], GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram[1], 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-
 
     // Freeing shader from memory
     glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShaderYellow);
-    glDeleteShader(fragmentShaderOrange);
+    glDeleteShader(fragmentShader);
 
     // Building the triangles
     float vertices1[] = {
-         0.5f,  0.5f, 0.0f, // top right
+         0.0f,  0.5f, 0.0f, // top right
          0.5f, -0.5f, 0.0f, // bottom right
         -0.5f, -0.5f, 0.0f, // bottom left
     };
 
-    // Second triangle
-    float vertices2[] = {
-        0.95f, 0.95f, 0.0f, // Top right
-        0.95f, 0.0f,  0.0f, // Bottom right
-        0.55f, 0.0f, -0.5f  // Top Left
-    };
-
     // Generating an array information needed for opengl
-    unsigned int VBOs[2], VAOs[2];
-    glGenVertexArrays(2, VAOs);
-    glGenBuffers(2, VBOs);
+    unsigned int VBO, VAO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
 
     // Setup for the first triangle
     // Bind Vertex Array Object
-    glBindVertexArray(VAOs[0]);
+    glBindVertexArray(VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
 
     // Interpreting my triangle
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Setup for the second triangle
-    glBindVertexArray(VAOs[1]);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -181,18 +143,17 @@ int main(int argc, char **argv) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Draw orange triangle
-        glUseProgram(shaderProgram[0]);
+        glUseProgram(shaderProgram);
+
+        // Changing shader color over time
+        float timeValue = glfwGetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+
+        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
         // First triangle
-        glBindVertexArray(VAOs[0]);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        // Draw yellow triangle
-        glUseProgram(shaderProgram[1]);
-
-        // Draw second triangle
-        glBindVertexArray(VAOs[1]);
+        glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // Check and call events and swap the buffers
@@ -201,10 +162,9 @@ int main(int argc, char **argv) {
     }
 
     // Freeing all resources
-    glDeleteVertexArrays(2, VAOs);
-    glDeleteBuffers(2, VBOs);
-    glDeleteProgram(shaderProgram[0]);
-    glDeleteProgram(shaderProgram[1]);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteProgram(shaderProgram);
 
     glfwTerminate();
     return 0;
