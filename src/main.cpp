@@ -15,18 +15,19 @@ extern "C" {
 // Vertex shader for the triangle
 const char *vertexShaderSource = "#version 460 core\n"
     "layout (location = 0) in vec3 aPos;\n"
-    // "out vec4 vertexColor;\n"
+    "layout (location = 1) in vec3 aColor;\n"
+    "out vec3 ourColor;\n"
     "void main()\n"
     "{\n"
     "    gl_Position = vec4(aPos, 1.0);\n"
-    // "    vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
+    "    ourColor = aColor;"
     "}\0";
 
 const char *fragmentShaderSource = "#version 460 core\n"
+    "in vec3 ourColor;\n"
     "out vec4 FragColor;\n"
-    "uniform vec4 ourColor;\n"
     "void main() {\n"
-    "    FragColor = ourColor;\n"
+    "    FragColor = vec4(ourColor, 1.0f);\n"
     "}\0";
 
 void checkShaderCompilationStatus(unsigned int shader) {
@@ -107,10 +108,13 @@ int main(int argc, char **argv) {
     glDeleteShader(fragmentShader);
 
     // Building the triangles
+    // First 3 elements -> positions for the vertices
+    // Last 3 elements  -> colors
     float vertices1[] = {
-         0.0f,  0.5f, 0.0f, // top right
-         0.5f, -0.5f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
+         // Position        // Colors
+         0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // top right RED
+         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right GREEN
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f  // bottom left BLUE
     };
 
     // Generating an array information needed for opengl
@@ -125,9 +129,13 @@ int main(int argc, char **argv) {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
 
-    // Interpreting my triangle
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // Interpreting my triangle position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    // Interpreting my triangle color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -145,14 +153,7 @@ int main(int argc, char **argv) {
 
         glUseProgram(shaderProgram);
 
-        // Changing shader color over time
-        float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-
-        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
-        // First triangle
+        // Render triangle
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
