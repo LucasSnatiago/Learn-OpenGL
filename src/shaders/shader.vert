@@ -8,5 +8,6 @@ uniform float movePos;
 void main()
 {
     gl_Position = vec4(aPos.x + movePos, aPos.y, aPos.z, 1.0f);
-    ourColor = aColor;
+    // ourColor = aColor;
+    ourColor = aPos;
 }
