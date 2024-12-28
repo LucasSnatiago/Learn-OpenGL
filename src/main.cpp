@@ -13,7 +13,6 @@
 extern "C" {
     #include <window/resize.h>
     #include <input/input.h>
-    #include <imgui.h>
 }
 
 
