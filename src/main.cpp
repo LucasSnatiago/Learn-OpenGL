@@ -90,6 +90,7 @@ int main(int argc, char **argv, char **env) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         ourShader.use();
+        ourShader.setFloat("movePos", 0.5f);
 
         // Render triangle
         glBindVertexArray(VAO);
