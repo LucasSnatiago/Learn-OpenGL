@@ -11,6 +11,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Adicionar as fontes do projeto
 file(GLOB SOURCES
+    ${CMAKE_SOURCE_DIR}/src/shaders/*.cpp
     ${CMAKE_SOURCE_DIR}/src/window/*.c
     ${CMAKE_SOURCE_DIR}/src/input/*.c
     ${CMAKE_SOURCE_DIR}/src/*.cpp
