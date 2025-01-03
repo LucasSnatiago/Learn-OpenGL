@@ -1,5 +1,5 @@
 // OpenGL imports
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 // Standard Libraries Imports
@@ -37,7 +37,7 @@ int main(int argc, char **argv, char **env) {
     // Called everytime the window is resized
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!gladLoadGL(glfwGetProcAddress)) {
         std::cerr << "Failed to load Glad context!\n";
         return -1;
     }

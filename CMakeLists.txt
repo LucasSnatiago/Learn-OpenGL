@@ -36,7 +36,8 @@ FetchContent_MakeAvailable(glfw)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Adicionar glad
-add_library(glad STATIC ${CMAKE_SOURCE_DIR}/src/glad.c)
+add_library(glad STATIC ${CMAKE_SOURCE_DIR}/src/gl.c)
+add_library(vulkan STATIC ${CMAKE_SOURCE_DIR}/src/vulkan.c)
 
 # Linkar o executável com glad, glfw e OpenGL
-target_link_libraries(${PROJECT_NAME} glad glfw GL X11 wayland-client pthread Xrandr Xi dl)
+target_link_libraries(${PROJECT_NAME} glad vulkan glfw GL X11 wayland-client pthread Xrandr Xi dl)
