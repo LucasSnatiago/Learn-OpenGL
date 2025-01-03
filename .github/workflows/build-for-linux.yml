@@ -21,9 +21,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        lfs: 'true'
 
     - name: Install dependencies
-      run: sudo apt update && sudo apt install -y ninja libglfw3-dev g++-12 build-essential libwayland-dev xorg-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
+      run: sudo apt update && sudo apt install -y git-lfs ninja libglfw3-dev g++-12 build-essential libwayland-dev xorg-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
 
     - name: Run Makefile
       run: make
