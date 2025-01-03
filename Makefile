@@ -1,9 +1,10 @@
 BUILD_DIR:=./build/
 BIN=LearnOpenGL
+COMPILER:=ninja
 
 all:
-	cmake -S . -B $(BUILD_DIR)
-	$(MAKE) -C $(BUILD_DIR) -j$(nproc)
+	cmake -S . -B $(BUILD_DIR) -G Ninja
+	$(COMPILER) -C $(BUILD_DIR)
 
 run: all
 	$(BUILD_DIR)/$(BIN)
