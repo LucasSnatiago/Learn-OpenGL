@@ -1,4 +1,5 @@
 // OpenGL imports
+#define GLFW_INCLUDE_NONE
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
@@ -43,7 +44,7 @@ int main(int argc, char **argv, char **env) {
     }
 
     // Creating shaders
-    Shader ourShader("../src/shaders/shader.vert", "../src/shaders/shader.frag");
+    Shader ourShader("./src/shaders/shader.vert", "./src/shaders/shader.frag");
 
     // Building the triangles
     // First 3 elements -> positions for the vertices
