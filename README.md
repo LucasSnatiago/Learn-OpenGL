@@ -6,4 +6,6 @@ Book available at: https://learnopengl.com/book/book_pdf.pdf
 
 # Compilation process
 
-- It's necessary to have ninja and cmake installed
+- ninja
+- cmake
+- git-lfs
