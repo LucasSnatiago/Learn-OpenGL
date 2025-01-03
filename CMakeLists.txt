@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.27)
 cmake_policy(SET CMP0072 NEW)
 
 # Nome do projeto e definição dos padrões de linguagem
 project(LearnOpenGL LANGUAGES C CXX VERSION 0.1.0)
 
 include(FetchContent)
+set(FETCHCONTENT_QUIET FALSE)
 
 # Adicionar o diretório ./include ao caminho de inclusão
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -24,6 +25,8 @@ FetchContent_Declare(
   glfw
   GIT_REPOSITORY https://github.com/glfw/glfw.git
   GIT_TAG 3.4
+  GIT_PROGRESS TRUE
+  GIT_SHALLOW TRUE
 )
 
 FetchContent_MakeAvailable(glfw)
