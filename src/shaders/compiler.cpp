@@ -1,6 +1,6 @@
 #include <shaders/compiler.hpp>
 
-static void checkShaderCompilationError(unsigned int shader, const char* shaderType) {
+static void checkShaderCompilationError(GLuint shader, const char* shaderType) {
     int success;
     char infoLog[512];
 
@@ -14,7 +14,7 @@ static void checkShaderCompilationError(unsigned int shader, const char* shaderT
     }
 }
 
-inline void checkShaderLinkError(unsigned int shader) {
+inline void checkShaderLinkError(GLuint shader) {
     int success;
     char infoLog[512];
 
@@ -66,7 +66,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 
     // 2.
     // Compile shaders
-    unsigned int vertex, fragment;
+    GLuint vertex, fragment;
 
     // Vertex Shader
     vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -106,14 +106,14 @@ void Shader::use() {
     glUseProgram(this->ID);
 }
 
-void Shader::setBool(const std::string &name, bool value) const {
+void Shader::setBool(const std::string &name, GLboolean value) const {
     glUniform1i(glGetUniformLocation(this->ID, name.c_str()), value);
 }
 
-void Shader::setInt(const std::string &name, int value) const {
+void Shader::setInt(const std::string &name, GLint value) const {
     glUniform1i(glGetUniformLocation(this->ID, name.c_str()), value);
 }
 
-void Shader::setFloat(const std::string &name, float value) const {
+void Shader::setFloat(const std::string &name, GLfloat value) const {
     glUniform1f(glGetUniformLocation(this->ID, name.c_str()), value);
 }

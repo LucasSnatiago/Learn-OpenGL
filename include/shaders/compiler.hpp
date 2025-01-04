@@ -10,7 +10,7 @@
 class Shader {
 public:
     // The program ID
-    unsigned int ID;
+    GLuint ID;
 
     // Constructor reads and build the shaders
     Shader(const char* vertexPath, const char* fragmentPath);
@@ -19,9 +19,9 @@ public:
     void use();
 
     // Utility uniform functions
-    void setBool(const std::string &name, bool value) const;
-    void setInt(const std::string &name, int value) const;
-    void setFloat(const std::string &name, float value) const;
+    void setBool(const std::string &name, GLboolean value) const;
+    void setInt(const std::string &name, GLint value) const;
+    void setFloat(const std::string &name, GLfloat value) const;
 
     // Clean memory after use
     ~Shader();

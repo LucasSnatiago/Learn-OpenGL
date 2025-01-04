@@ -4,6 +4,6 @@
 #include <GLFW/glfw3.h>
 
 // Callback for everytime the window is resized
-void framebuffer_size_callback(GLFWwindow *screen, int width, int heigth);
+void framebuffer_size_callback(GLFWwindow *screen, GLsizei width, GLsizei heigth);
 
 #endif
