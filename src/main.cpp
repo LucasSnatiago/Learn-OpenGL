@@ -111,6 +111,9 @@ int main(int argc, char **argv, char **env) {
     ourShader.use();
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
     ourShader.setInt("texture2", 1);
+    GLint visibility = glGetUniformLocation(ourShader.ID, "visibility");
+    GLfloat visibilityValue = 0.2f;
+    glUniform1f(visibility, visibilityValue);
 
     enum RENDER_MODE render = FILL;
     char isKeyPressed = 0;
@@ -118,6 +121,14 @@ int main(int argc, char **argv, char **env) {
     while (!glfwWindowShouldClose(window)) {
         // Process input events
         processInput(window, &render, &isKeyPressed);
+
+        // Exercise
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+            visibilityValue -= 0.1f;
+        } else if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+            visibilityValue += 0.1f;
+        }
+        glUniform1f(visibility, visibilityValue);
 
         // Clear Background
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
