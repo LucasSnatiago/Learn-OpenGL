@@ -14,6 +14,7 @@
 
 // Local C++ libraries imports
 #include <shaders/compiler.hpp>
+#include <texture/loader.hpp>
 
 // Local C Libraries imports
 extern "C" {
@@ -25,8 +26,8 @@ extern "C" {
 
 int main(int argc, char **argv, char **env) {
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     glfwSetErrorCallback([](int error, const char* description) {
@@ -52,37 +53,18 @@ int main(int argc, char **argv, char **env) {
     // Creating shaders
     Shader ourShader("./src/shaders/shader.vert", "./src/shaders/shader.frag");
 
+
+    // Generating an array information needed for opengl
+    GLuint VBO, VAO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    stbi_set_flip_vertically_on_load(true);
+
     // Setting all 2D texture settings
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    // Texture will be mirrored on the edges of the screen
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
-
-    // Texture filtering options
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Loading textures
-    int32_t width, height, nrChannels;
-    unsigned char *data = stbi_load("textures/container.jpg", &width, &height, &nrChannels, 0);
-
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-    } else {
-        std::cerr << "Failed to load texture from disk\n";
-        std::exit(EXIT_FAILURE);
-
-    }
-
-    // Freeing image from RAM, keeping it in OpenGL driver only
-    stbi_image_free(data);
+    GLuint texture1 = loadTextureFromDisk("textures/container.jpg", GL_RGB);
+    GLuint texture2 = loadTextureFromDisk("textures/awesomeface.png", GL_RGBA);
 
     // Building the triangles
     // First 3 elements  -> positions for the vertices
@@ -101,12 +83,6 @@ int main(int argc, char **argv, char **env) {
         0, 1, 3, // First triangle
         1, 2, 3  // Second triangle
     };
-
-    // Generating an array information needed for opengl
-    GLuint VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
 
     // Setup for the first triangle
     // Bind Vertex Array Object
@@ -131,6 +107,11 @@ int main(int argc, char **argv, char **env) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    // Loading textures
+    ourShader.use();
+    glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
+    ourShader.setInt("texture2", 1);
+
     enum RENDER_MODE render = FILL;
     char isKeyPressed = 0;
     // Program main loop
@@ -143,7 +124,10 @@ int main(int argc, char **argv, char **env) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Bind texture
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
         // Render container
         ourShader.use();
