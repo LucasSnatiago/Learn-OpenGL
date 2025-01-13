@@ -122,11 +122,14 @@ int main(int argc, char **argv, char **env) {
         // Process input events
         processInput(window, &render, &isKeyPressed);
 
+        double delta = glfwGetTime();
+
         // Exercise
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            visibilityValue -= 0.1f;
-        } else if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-            visibilityValue += 0.1f;
+            visibilityValue -= 0.002f * delta;
+        }
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+            visibilityValue += 0.002f * delta;
         }
         glUniform1f(visibility, visibilityValue);
 
