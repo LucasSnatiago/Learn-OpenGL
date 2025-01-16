@@ -36,11 +36,6 @@ int main(int argc, char **argv, char **env) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // Remove windows console
-    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-    #endif
-
     glfwSetErrorCallback([](int error, const char* description) {
         std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
     });
