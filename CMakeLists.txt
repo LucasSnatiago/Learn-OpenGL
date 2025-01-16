@@ -32,6 +32,16 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glfw)
 
+FetchContent_Declare(
+  glm
+  GIT_REPOSITORY https://github.com/g-truc/glm.git
+  GIT_TAG 1.0.1
+  GIT_PROGRESS TRUE
+  GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(glm)
+
 
 # Cria o executável e inclui as bibliotecas necessárias
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -42,7 +52,7 @@ add_library(vulkan STATIC ${CMAKE_SOURCE_DIR}/src/vulkan.c)
 
 # Linkar o executável com glad, glfw e OpenGL
 if (MSVC)
-  target_link_libraries(${PROJECT_NAME} glad vulkan glfw OpenGL32)
+  target_link_libraries(${PROJECT_NAME} glad vulkan glfw glm OpenGL32)
 else()
-  target_link_libraries(${PROJECT_NAME} glad vulkan glfw GL X11 wayland-client pthread Xrandr Xi dl)
+  target_link_libraries(${PROJECT_NAME} glad vulkan glfw GL glm X11 wayland-client pthread Xrandr Xi dl)
 endif()

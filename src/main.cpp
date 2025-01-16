@@ -5,6 +5,11 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
+// OpenGL Math import
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 // Standard Libraries Imports
 #include <iostream>
 #include <cmath>
@@ -54,6 +59,12 @@ int main(int argc, char **argv, char **env) {
     // Creating shaders
     Shader ourShader("./shaders/shader.vert", "./shaders/shader.frag");
 
+    // Testing math lib
+    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+    vec = trans * vec;
+    std::cout << vec.x << vec.y << vec.z << std::endl;
 
     // Generating an array information needed for opengl
     GLuint VBO, VAO, EBO;
