@@ -51,10 +51,11 @@ add_library(glad STATIC ${CMAKE_SOURCE_DIR}/src/gl.c)
 add_library(vulkan STATIC ${CMAKE_SOURCE_DIR}/src/vulkan.c)
 
 # Se estiver no windows não exibir o console para o usuario
-if(WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE ON)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE _GLFW_WIN32)
-endif()
+# DESATIVADO NO MOMENTO, POIS NÃO SEI FAZER ISSO FUNCIONAR
+# if(WIN32)
+#     set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE ON)
+#     target_compile_definitions(${PROJECT_NAME} PRIVATE _GLFW_WIN32)
+# endif()
 
 # Linkar o executável com glad, glfw e OpenGL
 if (MSVC)
