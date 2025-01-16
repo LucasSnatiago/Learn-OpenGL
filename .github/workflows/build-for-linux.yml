@@ -28,7 +28,14 @@ jobs:
       run: sudo apt update && sudo apt install -y git-lfs ninja-build libglfw3-dev g++-12 build-essential libwayland-dev xorg-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
 
     - name: Run Makefile
-      run: make
+      run: make release
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: opengl-build-artifacts
+        path: build/LearnOpenGL
+        overwrite: true
 
     # - name: Test
     #   working-directory: ${{github.workspace}}/build
