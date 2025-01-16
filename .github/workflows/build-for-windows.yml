@@ -1,6 +1,6 @@
 # This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: Build for Linux
+name: Build for Windows
 
 on:
   push:
@@ -17,27 +17,28 @@ jobs:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-20.04
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
       with:
         lfs: 'true'
 
-    - name: Install dependencies
-      run: sudo apt update && sudo apt install -y git-lfs ninja-build libglfw3-dev g++ build-essential libwayland-dev xorg-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
+    - name: Set up CMake
+      run: cmake -S . -B build/
 
-    - name: Run Makefile
-      run: |
-        make release
-        mv build/LearnOpenGL LearnOpenGL
+    - name: Compile using cmake
+      run: cmake --build build --config Release
+
+    - name: Preparing files to be uploaded
+      run: move build\LearnOpenGL.exe LearnOpenGL.exe
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: opengl-build-artifacts-linux
+        name: opengl-build-artifacts-windows
         path: |
-          LearnOpenGL
+          LearnOpenGL.exe
           textures/
           shaders/
         overwrite: true
