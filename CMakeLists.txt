@@ -21,11 +21,6 @@ file(GLOB SOURCES
 
 find_package(OpenGL REQUIRED)
 
-# Se estiver no windows não exibir o console para o usuario
-if(WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE ON)
-endif()
-
 # Faz o download e inclui o GLFW
 FetchContent_Declare(
   glfw
@@ -54,6 +49,11 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 # Adicionar glad
 add_library(glad STATIC ${CMAKE_SOURCE_DIR}/src/gl.c)
 add_library(vulkan STATIC ${CMAKE_SOURCE_DIR}/src/vulkan.c)
+
+# Se estiver no windows não exibir o console para o usuario
+if(WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE ON)
+endif()
 
 # Linkar o executável com glad, glfw e OpenGL
 if (MSVC)
