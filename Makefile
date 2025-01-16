@@ -9,5 +9,8 @@ all:
 run: all
 	$(BUILD_DIR)/$(BIN)
 
+release: all
+	strip $(BUILD_DIR)/$(BIN)
+
 clean:
 	$(RM) -r $(BUILD_DIR)

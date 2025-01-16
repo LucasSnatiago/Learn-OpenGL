@@ -7,6 +7,9 @@ project(LearnOpenGL LANGUAGES C CXX VERSION 0.1.0)
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+
 # Adicionar o diretório ./include ao caminho de inclusão
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
@@ -14,6 +17,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 file(GLOB SOURCES
     ${CMAKE_SOURCE_DIR}/src/shaders/*.cpp
     ${CMAKE_SOURCE_DIR}/src/texture/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/time/*.cpp
     ${CMAKE_SOURCE_DIR}/src/window/*.c
     ${CMAKE_SOURCE_DIR}/src/input/*.c
     ${CMAKE_SOURCE_DIR}/src/*.cpp
