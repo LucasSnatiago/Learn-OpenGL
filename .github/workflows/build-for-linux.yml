@@ -34,7 +34,10 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: opengl-build-artifacts
-        path: build/LearnOpenGL
+        path: |
+          build/LearnOpenGL
+          textures/
+          shaders/
         overwrite: true
 
     # - name: Test

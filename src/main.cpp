@@ -15,6 +15,7 @@
 // Local C++ libraries imports
 #include <shaders/compiler.hpp>
 #include <texture/loader.hpp>
+#include <time/delta_time.hpp>
 
 // Local C Libraries imports
 extern "C" {
@@ -51,7 +52,7 @@ int main(int argc, char **argv, char **env) {
     }
 
     // Creating shaders
-    Shader ourShader("./src/shaders/shader.vert", "./src/shaders/shader.frag");
+    Shader ourShader("./shaders/shader.vert", "./shaders/shader.frag");
 
 
     // Generating an array information needed for opengl
@@ -116,8 +117,7 @@ int main(int argc, char **argv, char **env) {
     glUniform1f(visibility, visibilityValue);
 
     // Delta time
-    double currentTime;
-    double lastTime = 0.0f;
+    Time time;
 
     enum RENDER_MODE render = FILL;
     char isKeyPressed = 0;
@@ -126,18 +126,15 @@ int main(int argc, char **argv, char **env) {
         // Process input events
         processInput(window, &render, &isKeyPressed);
 
-        currentTime = glfwGetTime();
-        double delta = currentTime - lastTime;
-        lastTime = currentTime;
-
-        std::cout << "Delta: " << delta << "\n";
+        time.Update();
+        time.PrintDeltaTime(1.0f);
 
         // Exercise
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            visibilityValue -= 0.5f * delta;
+            visibilityValue -= 0.5f * time.GetDeltaTime();
         }
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-            visibilityValue += 0.5f * delta;
+            visibilityValue += 0.5f * time.GetDeltaTime();
         }
         glUniform1f(visibility, visibilityValue);
 
