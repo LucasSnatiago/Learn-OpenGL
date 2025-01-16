@@ -45,4 +45,8 @@ add_library(glad STATIC ${CMAKE_SOURCE_DIR}/src/gl.c)
 add_library(vulkan STATIC ${CMAKE_SOURCE_DIR}/src/vulkan.c)
 
 # Linkar o executável com glad, glfw e OpenGL
-target_link_libraries(${PROJECT_NAME} glad vulkan glfw GL X11 wayland-client pthread Xrandr Xi dl)
+if (MSVC)
+  target_link_libraries(${PROJECT_NAME} glad vulkan glfw OpenGL32)
+else()
+  target_link_libraries(${PROJECT_NAME} glad vulkan glfw GL X11 wayland-client pthread Xrandr Xi dl)
+endif()
