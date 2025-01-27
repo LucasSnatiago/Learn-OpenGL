@@ -1,7 +1,8 @@
-#define GLFW_INCLUDE_NONE
+#define GLFW_INClUDE_NONE
 #define STB_IMAGE_IMPLEMENTATION
 
 // OpenGL imports
+// #include <vulkan/vulkan.h>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
@@ -28,7 +29,6 @@ extern "C" {
     #include <window/resize.h>
     #include <input/input.h>
 }
-
 
 int main(int argc, char **argv, char **env) {
     glfwInit();

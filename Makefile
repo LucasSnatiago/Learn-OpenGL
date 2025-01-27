@@ -9,6 +9,10 @@ all:
 run: all
 	$(BUILD_DIR)/$(BIN)
 
+windows:
+	cmake -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake -S . -B $(BUILD_DIR) -G Ninja
+	$(COMPILER) -C $(BUILD_DIR)
+
 release: all
 	strip $(BUILD_DIR)/$(BIN)
 
