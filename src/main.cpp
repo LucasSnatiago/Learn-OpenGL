@@ -28,6 +28,9 @@ extern "C" {
     #include <stb_image.h>
     #include <window/resize.h>
     #include <input/input.h>
+
+    // Assets embedded in the binary
+    #include "embedded_assets.h"
 }
 
 int main(int argc, char **argv, char **env) {
