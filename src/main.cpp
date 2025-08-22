@@ -59,13 +59,6 @@ int main(int argc, char **argv, char **env) {
     // Creating shaders
     Shader ourShader("./shaders/shader.vert", "./shaders/shader.frag");
 
-    // Testing math lib
-    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
-    vec = trans * vec;
-    std::cout << vec.x << vec.y << vec.z << std::endl;
-
     // Generating an array information needed for opengl
     GLuint VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -127,6 +120,9 @@ int main(int argc, char **argv, char **env) {
     GLfloat visibilityValue = 0.2f;
     glUniform1f(visibility, visibilityValue);
 
+    // Applying transformation
+    unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+
     // Delta time
     Time time;
 
@@ -163,6 +159,13 @@ int main(int argc, char **argv, char **env) {
         ourShader.use();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // Move container around
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
 
         // Check and call events and swap the buffers
         glfwSwapBuffers(window);
