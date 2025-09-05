@@ -30,6 +30,10 @@ extern "C" {
     #include <input/input.h>
 }
 
+// Constants
+#define WIDTH 800
+#define HEIGHT 600
+
 int main(int argc, char **argv, char **env) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -40,7 +44,7 @@ int main(int argc, char **argv, char **env) {
         std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
     });
 
-    GLFWwindow *window = glfwCreateWindow(800, 600, "Simple Window using OpenGL", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Simple Window using OpenGL", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create a GLFW context!\n";
         glfwTerminate();
@@ -122,6 +126,10 @@ int main(int argc, char **argv, char **env) {
 
     // Applying transformation
     unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+
+    // 3D model
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
     // Delta time
     Time time;
