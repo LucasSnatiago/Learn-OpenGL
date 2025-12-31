@@ -105,13 +105,14 @@ int main(int argc, char **argv, char **env) {
     //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(0*sizeof(GLfloat)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(0*sizeof(GLfloat)));
     glEnableVertexAttribArray(0);
-    // Color attibute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
+
+    // Color attribute
+    glDisableVertexAttribArray(1);
+
     // Texture attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6*sizeof(GLfloat)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -137,7 +138,6 @@ int main(int argc, char **argv, char **env) {
     char isKeyPressed = 0;
     // Program main loop
     while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
         // Process input events
         processInput(window, &render, &isKeyPressed);
 
@@ -179,12 +179,11 @@ int main(int argc, char **argv, char **env) {
         // Render container
         ourShader.use();
         glBindVertexArray(VAO);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-
 
         // Check and call events and swap the buffers
         glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     // Freeing all resources
