@@ -88,9 +88,6 @@ int main(int argc, char **argv, char **env) {
     //    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top right
     // };
 
-    GLfloat vertices[sizeof(cube_vertices) / sizeof(cube_vertices[0])] = {0};
-    memccpy(vertices, cube_vertices, sizeof(cube_vertices), sizeof(cube_vertices));
-
     // Triangle positions
     GLint indices[] {
         0, 1, 3, // First triangle
@@ -104,8 +101,8 @@ int main(int argc, char **argv, char **env) {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(0*sizeof(GLfloat)));
@@ -129,19 +126,9 @@ int main(int argc, char **argv, char **env) {
     glUniform1f(visibility, visibilityValue);
 
     // Applying transformation
-    unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-    unsigned int modelLoc     = glGetUniformLocation(ourShader.ID, "model");
-    unsigned int viewLoc      = glGetUniformLocation(ourShader.ID, "view");
-    unsigned int projLoc      = glGetUniformLocation(ourShader.ID, "projection");
-
-    // 3D model
-    glm::mat4 model = glm::mat4(1.0f);
-
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
+    unsigned int viewLoc  = glGetUniformLocation(ourShader.ID, "view");
+    unsigned int projLoc  = glGetUniformLocation(ourShader.ID, "projection");
 
     // Delta time
     Time time;
@@ -150,6 +137,7 @@ int main(int argc, char **argv, char **env) {
     char isKeyPressed = 0;
     // Program main loop
     while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
         // Process input events
         processInput(window, &render, &isKeyPressed);
 
@@ -175,28 +163,28 @@ int main(int argc, char **argv, char **env) {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+         // 3D model
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
 
-        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Render container
         ourShader.use();
         glBindVertexArray(VAO);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        // Move container around
-        glm::mat4 trans = glm::mat4(1.0f);
-        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
 
         // Check and call events and swap the buffers
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
 
     // Freeing all resources
