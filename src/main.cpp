@@ -28,6 +28,7 @@ extern "C" {
     #include <stb_image.h>
     #include <window/resize.h>
     #include <input/input.h>
+    #include <models/cube.h>
 }
 
 // Constants
@@ -79,13 +80,16 @@ int main(int argc, char **argv, char **env) {
     // First 3 elements  -> positions for the vertices
     // Second 3 elements -> colors
     // Third 2 elements  -> texture coordenates
-    GLfloat vertices[] = {
-         // Position          // Colors           // Texture position
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top right
-    };
+    // GLfloat vertices[] = {
+    //     // Position          // Colors           // Texture position
+    //     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+    //     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+    //    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+    //    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top right
+    // };
+
+    GLfloat vertices[sizeof(cube_vertices) / sizeof(cube_vertices[0])] = {0};
+    memccpy(vertices, cube_vertices, sizeof(cube_vertices), sizeof(cube_vertices));
 
     // Triangle positions
     GLint indices[] {
@@ -126,10 +130,18 @@ int main(int argc, char **argv, char **env) {
 
     // Applying transformation
     unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+    unsigned int modelLoc     = glGetUniformLocation(ourShader.ID, "model");
+    unsigned int viewLoc      = glGetUniformLocation(ourShader.ID, "view");
+    unsigned int projLoc      = glGetUniformLocation(ourShader.ID, "projection");
 
     // 3D model
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
     // Delta time
     Time time;
@@ -163,10 +175,17 @@ int main(int argc, char **argv, char **env) {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+
         // Render container
         ourShader.use();
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // Move container around
         glm::mat4 trans = glm::mat4(1.0f);
