@@ -11,7 +11,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-// Parse cli flags
+// External libraries imports
+#include <fmt/base.h>
 #include <argh.hpp>
 
 // Standard Libraries Imports
@@ -39,11 +40,11 @@ int WIDTH = 800;
 int HEIGHT = 600;
 
 static void print_help(const char* program_name) {
-    std::cout << "Usage: " << program_name << " [options]\n\n"
-              << "Options:\n"
-              << "  -W, --width <value>     Set the window width (default: " << WIDTH << ")\n"
-              << "  -H, --height <value>    Set the window height (default: " << HEIGHT << ")\n"
-              << "  --help                  Show this help message\n";
+    fmt::println("Usage: {} [options]", program_name);
+    fmt::println("Options:");
+    fmt::println("  -W, --width <value>     Set the window width (default: {})", WIDTH);
+    fmt::println("  -H, --height <value>    Set the window height (default: {})", HEIGHT);
+    fmt::println("  --help                  Show this help message");
 }
 
 int main(int argc, char **argv, char **env) {
@@ -67,7 +68,7 @@ int main(int argc, char **argv, char **env) {
         return 0;
     }
 
-    printf("Creating window of size %dx%d\n", WIDTH, HEIGHT);
+    fmt::println("Creating window of size {}x{}", WIDTH, HEIGHT);
 
     GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Simple Window using OpenGL", nullptr, nullptr);
     if (!window) {
