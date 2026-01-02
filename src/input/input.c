@@ -3,12 +3,14 @@
 void processInput(GLFWwindow *window, enum RENDER_MODE *render_mode, bool *is_key_pressed) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, 1);
+    }
 
-    } else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
         // Key just released
         *is_key_pressed = false;
+    }
 
-    } else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         // Looping through a pressed button
         if (*is_key_pressed)
             return;

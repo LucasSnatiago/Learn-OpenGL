@@ -8,8 +8,8 @@ include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static library only" FORCE)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 # Adicionar o diretório ./include ao caminho de inclusão
 include_directories(${CMAKE_SOURCE_DIR}/include)

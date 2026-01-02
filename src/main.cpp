@@ -1,10 +1,14 @@
-#define GLFW_INClUDE_NONE
+#define GLFW_INCLUDE_NONE
 #define STB_IMAGE_IMPLEMENTATION
 
 // OpenGL imports
 // #include <vulkan/vulkan.h>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
+
+// Standard Libraries Imports
+#include <iostream>
+#include <cmath>
 
 // OpenGL Math import
 #include <glm/glm.hpp>
@@ -14,10 +18,6 @@
 // External libraries imports
 #include <fmt/base.h>
 #include <argh.hpp>
-
-// Standard Libraries Imports
-#include <iostream>
-#include <cmath>
 
 // System imports for standarlization of code types
 #include <stddef.h>
@@ -32,6 +32,7 @@ extern "C" {
     #include <stb_image.h>
     #include <window/resize.h>
     #include <input/input.h>
+    #include <input/mouse.h>
     #include <models/cube.h>
 }
 
@@ -80,22 +81,25 @@ int main(int argc, char **argv, char **env) {
     glfwMakeContextCurrent(window);
     // Called everytime the window is resized
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    // Capture mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     if (!gladLoadGL(glfwGetProcAddress)) {
         std::cerr << "Failed to load Glad context!\n";
         return -1;
     }
 
+    // Activate zbuffer
     glEnable(GL_DEPTH_TEST);
 
     // Creating shaders
     Shader ourShader("./shaders/shader.vert", "./shaders/shader.frag");
 
     // Generating an array information needed for opengl
-    GLuint VBO, VAO, EBO;
+    GLuint VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
 
     stbi_set_flip_vertically_on_load(true);
 
@@ -103,33 +107,12 @@ int main(int argc, char **argv, char **env) {
     GLuint texture1 = loadTextureFromDisk("textures/container.jpg", GL_RGB);
     GLuint texture2 = loadTextureFromDisk("textures/awesomeface.png", GL_RGBA);
 
-    // Building the triangles
-    // First 3 elements  -> positions for the vertices
-    // Second 3 elements -> colors
-    // Third 2 elements  -> texture coordenates
-    // GLfloat vertices[] = {
-    //     // Position          // Colors           // Texture position
-    //     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-    //     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-    //    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-    //    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top right
-    // };
-
-    // Triangle positions
-    GLint indices[] {
-        0, 1, 3, // First triangle
-        1, 2, 3  // Second triangle
-    };
-
     // Setup for the first triangle
     // Bind Vertex Array Object
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(0*sizeof(GLfloat)));
@@ -164,6 +147,17 @@ int main(int argc, char **argv, char **env) {
 
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+
+    // Camera
+    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(direction);
 
     // Delta time
     Time time;
@@ -204,17 +198,24 @@ int main(int argc, char **argv, char **env) {
         }
 
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            view = glm::translate(view, glm::vec3(0.0f, 0.0f, speed));
+            cameraPos += speed * cameraFront;
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            view = glm::translate(view, glm::vec3(0.0f, 0.0f, -speed));
+            cameraPos -= speed * cameraFront;
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            view = glm::translate(view, glm::vec3(speed, 0.0f, 0.0f));
+            cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * speed;
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            view = glm::translate(view, glm::vec3(-speed, 0.0f, 0.0f));
+            cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * speed;
         }
+
+        // Camera
+        const float radius = 10.0f;
+        float camX = sin((float)glfwGetTime()) * radius;
+        float camZ = cos((float)glfwGetTime()) * radius;
+        view = glm::mat4(1.0f);
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         // Render container
         ourShader.use();
@@ -245,7 +246,6 @@ int main(int argc, char **argv, char **env) {
     // Freeing all resources
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
 
     glfwTerminate();
     return 0;
