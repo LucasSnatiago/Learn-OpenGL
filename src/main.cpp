@@ -11,6 +11,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// Parse cli flags
+#include <argh.hpp>
+
 // Standard Libraries Imports
 #include <iostream>
 #include <cmath>
@@ -31,9 +34,17 @@ extern "C" {
     #include <models/cube.h>
 }
 
-// Constants
-#define WIDTH 800
-#define HEIGHT 600
+// Window size
+int WIDTH = 800;
+int HEIGHT = 600;
+
+static void print_help(const char* program_name) {
+    std::cout << "Usage: " << program_name << " [options]\n\n"
+              << "Options:\n"
+              << "  -W, --width <value>     Set the window width (default: " << WIDTH << ")\n"
+              << "  -H, --height <value>    Set the window height (default: " << HEIGHT << ")\n"
+              << "  --help                  Show this help message\n";
+}
 
 int main(int argc, char **argv, char **env) {
     glfwInit();
@@ -44,6 +55,19 @@ int main(int argc, char **argv, char **env) {
     glfwSetErrorCallback([](int error, const char* description) {
         std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
     });
+
+    argh::parser cmdl;
+    cmdl.add_params({ "-W", "--width", "-H", "--height" });
+    cmdl.parse(argc, argv);
+
+    cmdl({"-W", "--width"}, WIDTH) >> WIDTH;
+    cmdl({"-H", "--height"}, HEIGHT) >> HEIGHT;
+    if (cmdl[{"-h", "--help"}]) {
+        print_help(argv[0]);
+        return 0;
+    }
+
+    printf("Creating window of size %dx%d\n", WIDTH, HEIGHT);
 
     GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Simple Window using OpenGL", nullptr, nullptr);
     if (!window) {
