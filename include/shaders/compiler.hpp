@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/gl.h>
+#include <glm/glm.hpp>
 
 #include <string>
 #include <fstream>
@@ -22,6 +23,7 @@ public:
     void setBool(const std::string &name, GLboolean value) const;
     void setInt(const std::string &name, GLint value) const;
     void setFloat(const std::string &name, GLfloat value) const;
+    void setMat4(const std::string &name, const glm::mat4 &value) const;
 
     // Clean memory after use
     ~Shader();

@@ -1,4 +1,5 @@
 #include <shaders/compiler.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 static void checkShaderCompilationError(GLuint shader, const char* shaderType) {
     int success;
@@ -116,4 +117,11 @@ void Shader::setInt(const std::string &name, GLint value) const {
 
 void Shader::setFloat(const std::string &name, GLfloat value) const {
     glUniform1f(glGetUniformLocation(this->ID, name.c_str()), value);
+}
+
+void Shader::setMat4(const std::string &name, const glm::mat4 &value) const {
+    GLint loc = glGetUniformLocation(ID, name.c_str());
+    if (loc != -1) {
+        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value));
+    }
 }
