@@ -133,6 +133,13 @@ int main(int argc, char **argv, char **env) {
     unsigned int viewLoc  = glGetUniformLocation(ourShader.ID, "view");
     unsigned int projLoc  = glGetUniformLocation(ourShader.ID, "projection");
 
+    // 3D model
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 projection = glm::mat4(1.0f);
+
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+
     // Delta time
     Time time;
 
@@ -165,18 +172,24 @@ int main(int argc, char **argv, char **env) {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
-        // 3D model
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
+        // Camera movement
+        float speed = 2.5f * time.GetDeltaTime();
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            speed *= 3.0f;
+        }
 
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-
-        ourShader.setMat4("model", model);
-        ourShader.setMat4("view", view);
-        ourShader.setMat4("projection", projection);
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            view = glm::translate(view, glm::vec3(0.0f, 0.0f, speed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            view = glm::translate(view, glm::vec3(0.0f, 0.0f, -speed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            view = glm::translate(view, glm::vec3(speed, 0.0f, 0.0f));
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            view = glm::translate(view, glm::vec3(-speed, 0.0f, 0.0f));
+        }
 
         // Render container
         ourShader.use();
@@ -184,25 +197,20 @@ int main(int argc, char **argv, char **env) {
         for (int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
-            model = glm::translate(model, glm::vec3(0.0f, -1.0f * (float)glfwGetTime(), 0.0f));
-            float angle = 20.0f * i;
+            float angle = 20.0f * (i+1);
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
              // every 3rd iteration we set the angle using time
             if (i % 3 == 0) {
-                model = glm::rotate(model, glm::radians(angle) * (float)glfwGetTime(), glm::vec3(1.0f, 0.3f, 0.5f));
+                model = glm::rotate(model, glm::radians(angle) * (float)glfwGetTime(), glm::vec3(1.0f));
             }
 
             ourShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        for (int i = 0; i < 10; i++) {
-            //get i the obj is out of the view
-            if (cubePositions[i].y - 1.0f * (float)glfwGetTime() < -5.0f) {
-                cubePositions[i].y += 10.0f;
-            }
-        }
+        ourShader.setMat4("view", view);
+        ourShader.setMat4("projection", projection);
 
         // Check and call events and swap the buffers
         glfwSwapBuffers(window);
